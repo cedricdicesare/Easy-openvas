@@ -108,30 +108,7 @@ Change the default admin password after the first login.
 
 ## Mini OpenVAS configuration tutorial
 
-Open the OpenVAS web interface from your browser:
-
-```text
-https://<server-fqdn>
-```
-
-or:
-
-```text
-https://<server-ip>
-```
-
-If the browser shows a certificate warning, continue only if you trust the server. This warning is expected with the default self-signed certificate.
-
-Log in with the default credentials:
-
-```text
-Username: admin
-Password: admin
-```
-
-Change the default admin password immediately after the first login.
-
-Before creating a scan, wait until the vulnerability feeds are fully synchronized. The first synchronization can take a long time after the initial installation.
+Before configuring a scan, wait until the vulnerability feeds are fully synchronized. The first synchronization can take a **VERY LONG TIME** after the initial installation.
 
 You can check the feed synchronization status in:
 
@@ -156,3 +133,11 @@ To scan a host:
 Create separate tasks when the scan policy is different, or when you want to organize scans by scope. For example, use different tasks for internal servers, external exposure, workstations, or critical assets.
 
 When the scan is complete, open the task results and review the report. The report lists detected vulnerabilities, severity levels, affected services, and remediation guidance.
+
+## License
+
+This project is licensed under the GNU Affero General Public License v3.0 (`AGPL-3.0-only`).
+
+You can use, copy, share, and modify this project. If you distribute a modified version, or make a modified version available as a network service, you must keep it under the AGPL and make the corresponding source code available to users.
+
+Full license text: <https://www.gnu.org/licenses/agpl-3.0.html>
