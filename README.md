@@ -27,11 +27,10 @@ git clone https://github.com/cedricdicesare/Easy-openvas.git
 cd Easy-openvas
 ```
 
-Or copy only the OpenVAS installer script to the Debian 13 machine:
+It is also possible to copy only the content of `Openvas-installer.sh` into a new script file on the Debian 13 machine.
 
 ```bash
-scp Openvas-installer.sh user@debian-server:/tmp/
-cd /tmp
+nano Openvas-installer.sh
 ```
 
 Make the script executable:
