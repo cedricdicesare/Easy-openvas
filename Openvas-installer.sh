@@ -9,7 +9,7 @@ echo ""
 
 if [ "$EUID" -ne 0 ]; then
   echo "Error: this script must be run as root."
-  echo "Example: sudo ./install-openvas.sh"
+  echo "Example: sudo ./Openvas-installer.sh"
   exit 1
 fi
 
@@ -100,13 +100,20 @@ echo "Compose file downloaded:"
 echo "$COMPOSE_FILE"
 echo ""
 
+echo "Configuring HTTPS access on port 443..."
+if grep -q "127.0.0.1:443:443" "$COMPOSE_FILE"; then
+  sed -i 's/127\.0\.0\.1:443:443/443:443/' "$COMPOSE_FILE"
+fi
+echo "HTTPS access configured."
+echo ""
+
 echo "[9/9] Starting OpenVAS containers..."
 
 docker compose -f "$COMPOSE_FILE" pull
 
 echo ""
 echo "Starting containers. Some data containers may take several minutes to become healthy..."
-docker compose -f "$COMPOSE_FILE" up -d || true
+docker compose -f "$COMPOSE_FILE" up -d
 
 echo ""
 echo "Waiting for scap-data container to become healthy..."
