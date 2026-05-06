@@ -6,6 +6,17 @@ Setup a full OpenVAS service easily on a Debian host with Docker.
 
 - A Debian 13 machine.
 - A user account with sudo privileges.
+- Recommended CPU: 2 vCPU minimum, 4 vCPU for a comfortable experience.
+- Recommended RAM: 8 GB minimum, 12 GB or more for a comfortable experience.
+- Recommended disk space: at least 100 GB free.
+- A stable internet connection for Docker image downloads and vulnerability feed synchronization.
+- Network access to the targets you want to scan.
+
+## Official documentation
+
+The official OpenVAS / Greenbone Community Containers documentation is available here:
+
+<https://greenbone.github.io/docs/latest/22.4/container/index.html>
 
 ## Installation
 
