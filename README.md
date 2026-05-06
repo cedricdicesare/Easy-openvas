@@ -43,6 +43,8 @@ If the server FQDN is not available or not resolvable from your browser, use the
 https://<server-ip>
 ```
 
+The installer configures the OpenVAS web service to listen on all network interfaces. This means the interface can be reached through any IP address assigned to the Debian server, as long as the network and firewall allow access to port `443`.
+
 ## Port
 
 No port needs to be added to the URL with the default OpenVAS Docker Compose configuration.
@@ -54,6 +56,40 @@ https://<server-fqdn>
 ```
 
 Only specify a port if you changed the Docker Compose port mapping manually. In the default OpenVAS Compose file, port `9392` redirects to `443`.
+
+## Network access restriction
+
+By default, this installer makes the OpenVAS web interface reachable from any IP address assigned to the Debian server. Access is not restricted to `127.0.0.1`.
+
+If you want to restrict access, edit `/opt/openvas/compose.yaml` and bind the web ports to a specific address.
+
+To allow access only from the Debian server itself:
+
+```yaml
+ports:
+  - 127.0.0.1:443:443
+  - 127.0.0.1:9392:9392
+```
+
+To allow access only through one specific server IP:
+
+```yaml
+ports:
+  - 192.168.1.42:443:443
+  - 192.168.1.42:9392:9392
+```
+
+After changing the port binding, recreate the containers:
+
+```bash
+sudo docker compose -f /opt/openvas/compose.yaml up -d
+```
+
+You can also keep OpenVAS listening on all interfaces and restrict access with a firewall rule, for example with `ufw`:
+
+```bash
+sudo ufw allow from 192.168.1.0/24 to any port 443 proto tcp
+```
 
 ## HTTPS certificate
 
@@ -69,3 +105,46 @@ Password: admin
 ```
 
 Change the default admin password after the first login.
+
+## Mini OpenVAS configuration tutorial
+
+Open the OpenVAS web interface from your browser:
+
+```text
+https://<server-fqdn>
+```
+
+or:
+
+```text
+https://<server-ip>
+```
+
+If the browser shows a certificate warning, continue only if you trust the server. This warning is expected with the default self-signed certificate.
+
+Log in with the default credentials:
+
+```text
+Username: admin
+Password: admin
+```
+
+Change the default admin password immediately after the first login.
+
+Wait until the vulnerability feeds are fully synchronized. The first synchronization can take a long time after the initial installation.
+
+To scan a host:
+
+1. Go to `Configuration` > `Targets`.
+2. Create a new target.
+3. Enter a target name.
+4. Enter the host IP address or DNS name to scan.
+5. Save the target.
+6. Go to `Scans` > `Tasks`.
+7. Create a new task.
+8. Select the target created previously.
+9. Start the scan.
+
+Create separate tasks when the scan policy is different, or when you want to organize scans by scope. For example, use different tasks for internal servers, external exposure, workstations, or critical assets.
+
+When the scan is complete, open the task results and review the report. The report lists detected vulnerabilities, severity levels, affected services, and remediation guidance.

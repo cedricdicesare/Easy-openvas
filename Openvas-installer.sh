@@ -100,11 +100,12 @@ echo "Compose file downloaded:"
 echo "$COMPOSE_FILE"
 echo ""
 
-echo "Configuring HTTPS access on port 443..."
-if grep -q "127.0.0.1:443:443" "$COMPOSE_FILE"; then
-  sed -i 's/127\.0\.0\.1:443:443/443:443/' "$COMPOSE_FILE"
-fi
-echo "HTTPS access configured."
+echo "Configuring OpenVAS web access on all network interfaces..."
+sed -i \
+  -e 's/127\.0\.0\.1:443:443/443:443/g' \
+  -e 's/127\.0\.0\.1:9392:9392/9392:9392/g' \
+  "$COMPOSE_FILE"
+echo "OpenVAS web access configured for any server IP address."
 echo ""
 
 echo "[9/9] Starting OpenVAS containers..."
