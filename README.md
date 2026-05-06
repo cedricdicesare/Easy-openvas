@@ -131,7 +131,15 @@ Password: admin
 
 Change the default admin password immediately after the first login.
 
-Wait until the vulnerability feeds are fully synchronized. The first synchronization can take a long time after the initial installation.
+Before creating a scan, wait until the vulnerability feeds are fully synchronized. The first synchronization can take a long time after the initial installation.
+
+You can check the feed synchronization status in:
+
+```text
+Administration > Feed Status
+```
+
+If the feeds are not ready yet, the default scan configurations may not be available and task creation can fail.
 
 To scan a host:
 
