@@ -9,22 +9,30 @@ Setup a full OpenVAS service easily on a Debian host with Docker.
 
 ## Installation
 
-Copy the OpenVAS installer script to the Debian 13 machine:
+On the Debian 13 machine, either clone this repository:
+
+```bash
+git clone https://github.com/cedricdicesare/Easy-openvas.git
+cd Easy-openvas
+```
+
+Or copy only the OpenVAS installer script to the Debian 13 machine:
 
 ```bash
 scp Openvas-installer.sh user@debian-server:/tmp/
+cd /tmp
 ```
 
-On the Debian 13 machine, make the script executable:
+Make the script executable:
 
 ```bash
-chmod +x /tmp/Openvas-installer.sh
+chmod +x Openvas-installer.sh
 ```
 
 Run the installer with sudo:
 
 ```bash
-sudo /tmp/Openvas-installer.sh
+sudo ./Openvas-installer.sh
 ```
 
 The script installs Docker, downloads the OpenVAS Docker Compose file, starts the containers, and prints the access information at the end.
