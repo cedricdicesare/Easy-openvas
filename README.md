@@ -48,6 +48,35 @@ sudo ./Openvas-installer.sh
 
 The script installs Docker, downloads the OpenVAS Docker Compose file, starts the containers, and prints the access information at the end.
 
+## Updating Docker images without losing data
+
+**Before any update, make a complete backup or snapshot of the Debian machine.** This is strongly recommended so you can restore the full OpenVAS installation if the update fails.
+
+OpenVAS data such as users, scan tasks, reports, configuration, PostgreSQL data, and feeds are stored in Docker volumes. A normal image update recreates containers but keeps these volumes.
+
+To update the Docker images safely:
+
+```bash
+sudo docker compose -f /opt/openvas/compose.yaml pull
+sudo docker compose -f /opt/openvas/compose.yaml up -d
+```
+
+Then check the container status:
+
+```bash
+sudo docker compose -f /opt/openvas/compose.yaml ps
+```
+
+Do not use the following commands unless you intentionally want to delete OpenVAS data:
+
+```bash
+sudo docker compose -f /opt/openvas/compose.yaml down -v
+sudo docker volume prune
+sudo docker system prune --volumes
+```
+
+The `-v` and `--volumes` options remove Docker volumes. Removing volumes can delete OpenVAS configuration, scan tasks, reports, and database content.
+
 ## Web interface URL
 
 After installation, the OpenVAS web interface is available at:
