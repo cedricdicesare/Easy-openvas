@@ -155,7 +155,7 @@ Change the default admin password after the first login.
 
 ## Mini OpenVAS configuration tutorial
 
-Before configuring a scan, wait until the vulnerability feeds are fully synchronized. The first synchronization can take a **VERY LONG TIME** after the initial installation. Scans will not be possible until everything is fully loaded.
+Before configuring a scan, wait until the vulnerability feeds are fully synchronized. The first synchronization can take a **VERY LONG TIME** after the initial installation, and the vulnerability feed can take **more than 30 minutes** depending on the server performance and internet connection. Scans will not be possible until everything is fully loaded.
 
 You can check the feed synchronization status in:
 
