@@ -113,49 +113,81 @@ echo "[9/9] Starting OpenVAS containers..."
 docker compose -f "$COMPOSE_FILE" pull
 
 echo ""
-echo "Starting containers. Some data containers may take several minutes to become healthy..."
-docker compose -f "$COMPOSE_FILE" up -d
+echo "Starting feed data containers first."
+echo "Some data containers may take several minutes to copy feeds into Docker volumes..."
+
+BASE_FEED_DATA_SERVICES=(
+  vulnerability-tests
+  notus-data
+  scap-data
+  cert-bund-data
+  data-objects
+)
+
+DEPENDENT_FEED_DATA_SERVICES=(
+  dfn-cert-data
+  report-formats
+)
+
+docker compose -f "$COMPOSE_FILE" up -d "${BASE_FEED_DATA_SERVICES[@]}"
 
 echo ""
-echo "Waiting for scap-data container to become healthy..."
+echo "Waiting for feed data containers to become healthy..."
 
-SCAP_CONTAINER="$(docker compose -f "$COMPOSE_FILE" ps -q scap-data || true)"
+wait_for_healthy_service() {
+  local SERVICE_NAME="$1"
+  local CONTAINER_ID
+  local HEALTH_STATUS
+  local ATTEMPT=1
+  local MAX_ATTEMPTS=120
+  local SLEEP_SECONDS=15
 
-if [ -z "$SCAP_CONTAINER" ]; then
-  echo "Error: scap-data container was not found."
-  echo "Showing current container status:"
-  docker compose -f "$COMPOSE_FILE" ps
-  exit 1
-fi
+  CONTAINER_ID="$(docker compose -f "$COMPOSE_FILE" ps -q "$SERVICE_NAME" || true)"
 
-MAX_ATTEMPTS=60
-SLEEP_SECONDS=15
-ATTEMPT=1
-
-while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
-  HEALTH_STATUS="$(docker inspect --format='{{.State.Health.Status}}' "$SCAP_CONTAINER" 2>/dev/null || echo "unknown")"
-
-  echo "scap-data health status: $HEALTH_STATUS - attempt $ATTEMPT/$MAX_ATTEMPTS"
-
-  if [ "$HEALTH_STATUS" = "healthy" ]; then
-    echo "scap-data is healthy."
-    break
-  fi
-
-  if [ "$ATTEMPT" -eq "$MAX_ATTEMPTS" ]; then
-    echo ""
-    echo "Error: scap-data did not become healthy in time."
-    echo ""
-    echo "Last logs from scap-data:"
-    docker compose -f "$COMPOSE_FILE" logs --tail=100 scap-data
-    echo ""
-    echo "Current container status:"
+  if [ -z "$CONTAINER_ID" ]; then
+    echo "Error: $SERVICE_NAME container was not found."
+    echo "Showing current container status:"
     docker compose -f "$COMPOSE_FILE" ps
     exit 1
   fi
 
-  sleep "$SLEEP_SECONDS"
-  ATTEMPT=$((ATTEMPT + 1))
+  while [ "$ATTEMPT" -le "$MAX_ATTEMPTS" ]; do
+    HEALTH_STATUS="$(docker inspect --format='{{if .State.Health}}{{.State.Health.Status}}{{else}}{{.State.Status}}{{end}}' "$CONTAINER_ID" 2>/dev/null || echo "unknown")"
+
+    echo "$SERVICE_NAME status: $HEALTH_STATUS - attempt $ATTEMPT/$MAX_ATTEMPTS"
+
+    if [ "$HEALTH_STATUS" = "healthy" ]; then
+      echo "$SERVICE_NAME is healthy."
+      return 0
+    fi
+
+    if [ "$ATTEMPT" -eq "$MAX_ATTEMPTS" ]; then
+      echo ""
+      echo "Error: $SERVICE_NAME did not become healthy in time."
+      echo ""
+      echo "Last logs from $SERVICE_NAME:"
+      docker compose -f "$COMPOSE_FILE" logs --tail=100 "$SERVICE_NAME"
+      echo ""
+      echo "Current container status:"
+      docker compose -f "$COMPOSE_FILE" ps
+      exit 1
+    fi
+
+    sleep "$SLEEP_SECONDS"
+    ATTEMPT=$((ATTEMPT + 1))
+  done
+}
+
+for SERVICE_NAME in "${BASE_FEED_DATA_SERVICES[@]}"; do
+  wait_for_healthy_service "$SERVICE_NAME"
+done
+
+echo ""
+echo "Starting dependent feed data containers..."
+docker compose -f "$COMPOSE_FILE" up -d "${DEPENDENT_FEED_DATA_SERVICES[@]}"
+
+for SERVICE_NAME in "${DEPENDENT_FEED_DATA_SERVICES[@]}"; do
+  wait_for_healthy_service "$SERVICE_NAME"
 done
 
 echo ""
