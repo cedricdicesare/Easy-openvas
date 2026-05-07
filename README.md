@@ -151,7 +151,13 @@ Username: admin
 Password: admin
 ```
 
-Change the default admin password after the first login.
+Change the default admin password after the first login. You can do this from the admin account menu in the top-right corner: `Settings > Password`, then enter the old password and the new password.
+
+If the admin password is lost, you can reset it from the command line:
+
+```bash
+sudo docker exec -it greenbone-community-edition-gvmd-1 gvmd --user=admin --new-password='XXXXX'
+```
 
 ## Mini OpenVAS configuration tutorial
 
