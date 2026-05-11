@@ -188,7 +188,7 @@ Create separate tasks when the scan policy is different, or when you want to org
 When the scan is complete, open the task results and review the report. The report lists detected vulnerabilities, severity levels, affected services, and remediation guidance.
 
 
-### Disclaimer
+## Disclaimer
 
 This script is provided as a proposal/example and was developed as part of a proof of concept (PoC). It has not been tested in a production environment. Before any use or deployment in production, users must take all necessary precautions, review and understand the code, adapt it to their own context, and thoroughly test it.
 
